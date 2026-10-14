@@ -1,0 +1,14 @@
+{
+  "name": "kreative-krew",
+  "owner": { "name": "Kreativepardha", "url": "https://github.com/Kreativepardha" },
+  "metadata": { "description": "Kreative Krew: turn your Claude Code sessions into an engineering crew with a Manager." },
+  "plugins": [
+    {
+      "name": "kreative-krew",
+      "source": "./",
+      "description": "Manager session + worker sessions: approved briefs, evidence inbox, burnout detection with automatic succession, collision radar, merge refinery, live dashboard.",
+      "category": "productivity",
+      "keywords": ["claude-code", "mod", "multi-agent", "orchestration"]
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "name": "kreative-krew",
+  "version": "0.2.0",
+  "description": "Turn your Claude Code sessions into an engineering crew run by a Manager session: approved briefs, evidence inbox, burnout detection with automatic succession, collision radar, merge refinery and a live dashboard.",
+  "author": { "name": "Kreativepardha", "url": "https://github.com/Kreativepardha" },
+  "homepage": "https://github.com/Kreativepardha/kreative-krew",
+  "license": "MIT",
+  "keywords": ["claude-code", "mod", "multi-agent", "orchestration", "agents"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "fastModel": {
+      "type": "string",
+      "title": "Fast model",
+      "description": "Model for cards, digests, drafts and messages between sessions",
+      "default": "claude-haiku-5-5"
+    },
+    "smartModel": {
+      "type": "string",
+      "title": "Smart model",
+      "description": "Model for brief compiling, judging and handoff audits",
+      "default": "claude-sonnet-5-5"
+    },
+    "workerModel": {
+      "type": "string",
+      "title": "Worker model",
+      "description": "Model new workers start with (empty: your default)",
+      "default": ""
+    },
+    "hireMode": {
+      "type": "string",
+      "title": "Hire mode",
+      "description": "How new workers start: background sessions or tmux windows",
+      "default": "bg",
+      "options": ["bg", "tmux"]
+    },
+    "rotateAt": {
+      "type": "number",
+      "title": "Planned rotation at context %",
+      "description": "A worker past this context % is rotated at its next natural boundary",
+      "default": 50
+    },
+    "defaultBudgetUsd": {
+      "type": "number",
+      "title": "Default task budget (USD)",
+      "description": "Budget a brief gets when it does not set one",
+      "default": 5
+    },
+    "canary": {
+      "type": "boolean",
+      "title": "Canary quiz",
+      "description": "Experimental: quiz a suspect worker on its own goal before a swap",
+      "default": true
+    },
+    "claudeArgs": {
+      "type": "string",
+      "title": "Extra claude arguments",
+      "description": "Extra arguments for every hired worker, space separated",
+      "default": ""
+    }
+  }
+}

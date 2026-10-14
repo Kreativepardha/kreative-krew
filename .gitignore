@@ -1,0 +1,6 @@
+.claude-plugin/types/
+node_modules/
+tmp/
+*.log
+.DS_Store
+demo/frames/
