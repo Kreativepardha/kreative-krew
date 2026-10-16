@@ -43,7 +43,7 @@ Kreative Krew is the integration layer those agents are missing. The design deci
 
 | Pillar | What you get |
 |---|---|
-| **Brief compiler** | Say “add dark mode”. The Manager compiles a brief: goal, context, acceptance criteria, files the worker owns / must not touch, verification steps, known dead ends, budget. **You approve, revise or reject it before any worker sees it.** |
+| **Brief compiler** | Say “add dark mode”. The Manager compiles a brief: a tailored team of expert roles, your ask cleaned into a clear task, a fixed “understand first” section, goal, context, acceptance criteria, files the worker owns / must not touch, verification steps, known dead ends, budget and your standing rules. Plan tasks ask for an ASD-STE100 HTML artifact and hire at `--effort high`. **You approve, revise or reject it before any worker sees it.** See [docs/BRIEF-STYLE.md](docs/BRIEF-STYLE.md). |
 | **Evidence inbox** | Only what needs you, ranked by risk. PRs show evidence first: fresh-context review, independent spec-derived tests, a goal check, CI. Low-risk questions are batched and replies are pre-drafted (one key to send). |
 | **Witness** | Loop detection (same call ×3, A→B→A), edit-test micro-loops, stalls, drift outside the owned area, invented paths. |
 | **Burnout & succession** | A **sharpness** score per worker. Hard triggers (the same error after repeated fixes, context near compaction, rule breaks) or a low score propose a rotation; planned rotations happen at a natural boundary once context passes ~50%. The handoff packet is **extracted from git and the event log**, the tired worker's own account is **audited by a fresh judge**, and the successor **re-verifies every “done” claim** and can `ask_predecessor`. |
@@ -95,7 +95,7 @@ Attach to a background worker any time with `claude attach <session id>` (the in
 
 ### Options
 
-Set in `/config` or `pluginConfigs`: `fastModel` (default `claude-haiku-5-5`: cards, digests, drafts, messages), `smartModel` (default `claude-sonnet-5-5`: briefs, judging, handoff audits), `workerModel`, `hireMode` (`bg` | `tmux`), `rotateAt` (context %, default 50), `defaultBudgetUsd`, `canary` (experimental quiz before a swap), `claudeArgs` (extra flags for hired workers, e.g. `--permission-mode acceptEdits`).
+Set in `/config` or `pluginConfigs`: `fastModel` (default `claude-haiku-5-5`: cards, digests, drafts, messages), `smartModel` (default `claude-sonnet-5-5`: briefs, judging, handoff audits), `workerModel`, `hireMode` (`bg` | `tmux`), `rotateAt` (context %, default 50), `defaultBudgetUsd`, `canary` (experimental quiz before a swap), `claudeArgs` (extra flags for hired workers, e.g. `--permission-mode acceptEdits`), `standingRules` (text appended to every brief).
 
 ## How succession works
 

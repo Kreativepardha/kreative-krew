@@ -36,6 +36,7 @@ export const cfg = {
   defaultBudgetUsd: 5,
   canary: true,
   claudeArgs: '',
+  standingRules: '',
 }
 
 export function applyOptions(options: PluginOptions): void {
@@ -47,6 +48,7 @@ export function applyOptions(options: PluginOptions): void {
   cfg.defaultBudgetUsd = Math.max(0.5, num(options.defaultBudgetUsd, 5))
   cfg.canary = options.canary !== false
   cfg.claudeArgs = str(options.claudeArgs, '')
+  cfg.standingRules = str(options.standingRules, '').trim()
 }
 
 /** `root` is the Manager's project root: sessions under it are crew members. */

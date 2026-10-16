@@ -5,7 +5,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, On } from 'claude-code'
 
-import type { Board, Brief, Card, Conflict, HandoffAccount, HandoffFacts, HandoffPacket, LeadState, Need, Swap } from '../types'
+import type { Board, Brief, Card, Conflict, Effort, HandoffAccount, HandoffFacts, HandoffPacket, LeadState, Need, Swap } from '../types'
 import { NO_ROLE, PANE, emptyBoard, initialView, runtime } from './core/atoms'
 import { compileBrief, draftBrief, renderBrief } from './core/brief'
 import {
@@ -203,7 +203,7 @@ async function sendBrief($: $T, id: string): Promise<string> {
   }
   if (sentTo.length === 0) {
     const name = b.hireName || b.assignees[0] || 'Scout'
-    const hired = await hire($, name, text, { briefId: b.id, area: b.area, dnt: b.doNotTouch, budget: b.budgetUsd, goal: b.goal })
+    const hired = await hire($, name, text, { briefId: b.id, area: b.area, dnt: b.doNotTouch, budget: b.budgetUsd, goal: b.goal, effort: b.effort })
     if (!hired.ok) {
       await mutateLead($, st => { st.briefs = st.briefs.map(x => (x.id === id ? { ...x, status: 'failed', error: hired.error } : x)) })
       return `Could not hire ${name}: ${hired.error}`
@@ -230,6 +230,7 @@ type HireOpts = {
   gen?: number
   lineage?: string[]
   portBase?: number
+  effort?: Effort
 }
 
 async function freePortBase($: $T): Promise<number> {
@@ -281,10 +282,12 @@ export async function hire($: $T, rawName: string, briefText: string, o: HireOpt
   const prompt = `${tag}\n${briefText}`
   const extra = cfg.claudeArgs.split(/\s+/).filter(Boolean)
   const model = cfg.workerModel ? ['--model', cfg.workerModel] : []
+  // An explicit --effort in claudeArgs wins over the brief's.
+  const effort = o.effort && !extra.includes('--effort') ? ['--effort', o.effort] : []
   // tmux hands its trailing words to a shell, so that command line is quoted as one string.
   const argv = tmux
-    ? ['tmux', 'new-window', '-d', '-n', name, '-c', cwd, shellJoin(['claude', ...model, ...extra, '-n', name, prompt])]
-    : ['claude', '--bg', ...model, ...extra, '-n', name, prompt]
+    ? ['tmux', 'new-window', '-d', '-n', name, '-c', cwd, shellJoin(['claude', ...model, ...effort, ...extra, '-n', name, prompt])]
+    : ['claude', '--bg', ...model, ...effort, ...extra, '-n', name, prompt]
   const r = await run($, argv, cwd, 60_000)
   if (!r.ok) return { ok: false, error: short(r.err || r.out, 200) }
   let sid = (r.out.match(UUID.source.replace(/^\^|\$$/g, '')) ?? [])[0]

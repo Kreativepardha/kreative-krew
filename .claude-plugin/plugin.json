@@ -1,6 +1,6 @@
 {
   "name": "kreative-krew",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Turn your Claude Code sessions into an engineering crew run by a Manager session: approved briefs, evidence inbox, burnout detection with automatic succession, collision radar, merge refinery and a live dashboard.",
   "author": { "name": "Kreativepardha", "url": "https://github.com/Kreativepardha" },
   "homepage": "https://github.com/Kreativepardha/kreative-krew",
@@ -55,6 +55,12 @@
       "type": "string",
       "title": "Extra claude arguments",
       "description": "Extra arguments for every hired worker, space separated",
+      "default": ""
+    },
+    "standingRules": {
+      "type": "string",
+      "title": "Standing rules",
+      "description": "Text appended to every brief under 'Standing rules' (newlines are kept; set multi-line text under pluginConfigs in settings.json)",
       "default": ""
     }
   }
