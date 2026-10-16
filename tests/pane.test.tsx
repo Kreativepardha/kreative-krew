@@ -2,7 +2,7 @@ import { expect, mock, test, type Engine } from 'claude-code/testing'
 
 import type { On } from 'claude-code'
 
-import type { Board } from '../types'
+import type { Board, Brief } from '../types'
 
 const PANE_PROPS = { title: 'Krew', isFocused: true, bodyColumns: 100, placement: 'dock' as const, scroll: { offset: 0, bodyRows: 30 }, view: {} }
 
@@ -38,12 +38,15 @@ const LEAD = '22222222-2222-4222-8222-222222222222'
 const NOW = 1_800_000_000_000
 
 /** Seeds the shared store and lets the Manager's poll build the board. */
-async function asManager($: Engine, on: On): Promise<void> {
+type RunResult = { exitCode: number; stdout: string; stderr: string; isStdoutTruncated: boolean; isStderrTruncated: boolean }
+const NO_PROCESS: RunResult = { exitCode: 1, stdout: '', stderr: 'no process in tests', isStdoutTruncated: false, isStderrTruncated: false }
+
+async function asManager($: Engine, on: On, o: { brief?: Partial<Brief>; run?: (argv: readonly string[]) => RunResult } = {}): Promise<void> {
   const clock = mock.clock(on, { now: NOW })
   const b = board()
   const entries: Record<string, unknown> = {
     'krew:lead': { sid: LEAD, token: 't', since: 0, root: '/r' },
-    'krew:leadstate': b.lead,
+    'krew:leadstate': { ...b.lead, briefs: b.lead.briefs.map(x => ({ ...x, ...o.brief })) },
     'krew:notes:x': b.notes,
     'krew:log:x': b.events,
   }
@@ -61,7 +64,8 @@ async function asManager($: Engine, on: On): Promise<void> {
   on('session.send', () => ({ isDelivered: true }))
   on('session.id', () => ({ value: LEAD }))
   on('session.cwd', () => ({ value: '/r' }))
-  on('process.run', () => ({ value: { exitCode: 1, stdout: '', stderr: 'no process in tests', isStdoutTruncated: false, isStderrTruncated: false } }))
+  on('session.root', () => ({ value: '/r' }))
+  on('process.run', (_$, e) => ({ value: o.run ? o.run(e.argv) : NO_PROCESS }))
   on('model.complete', () => ({ value: { isAnswered: false, reason: 'empty-reply', usage: { input_tokens: 0, output_tokens: 0, cache_creation_input_tokens: 0, cache_read_input_tokens: 0 } } }))
   await $.session.start({ cwd: '/r', surface: 'terminal', isInteractive: true })
   await clock.advance(5000)
@@ -87,6 +91,27 @@ test('the Manager dashboard shows NEEDS YOU, the brief and every tab', async ($,
     await ui.press({ key: 'tab-inbox' })
     await ui.unmount()
   }
+})
+
+test('the full brief shows the founder exactly what the worker gets, and approving a plan brief hires at high effort', async ($, on) => {
+  const runs: string[][] = []
+  await asManager($, on, {
+    brief: { assignees: [], hireName: 'Hunter', kind: 'plan', effort: 'high', roles: ['a CTO', 'an AI agent expert', 'a threat hunter'], task: 'Plan the threat-hunting agent.' },
+    run: argv => {
+      runs.push([...argv])
+      return argv[0] === 'claude' ? { ...NO_PROCESS, exitCode: 0, stdout: '33333333-3333-4333-8333-333333333333' } : NO_PROCESS
+    },
+  })
+  const ui = await $.ui.mount({ plugin: 'kreative-krew', surface: 'terminal', component: 'Pane', requestId: 'krew', props: PANE_PROPS })
+  await ui.press({ key: 'full-b1' })
+  expect(await ui.find({ text: /I am onboarding you as a CTO, an AI agent expert and a threat hunter/ })).toBeDefined()
+  expect(await ui.find({ text: /Understand first/ })).toBeDefined()
+  expect(await ui.find({ text: /ASD-STE100/ })).toBeDefined()
+  await ui.press({ key: 'ap-b1' })
+  const hire = runs.find(a => a[0] === 'claude' && a[1] === '--bg')
+  expect(hire).toBeDefined()
+  expect(hire?.slice(0, 4)).toEqual(['claude', '--bg', '--effort', 'high'])
+  expect(hire?.at(-1)).toContain('## Task\nPlan the threat-hunting agent.')
 })
 
 test('a non-Manager session explains how to become one', async ($, on) => {

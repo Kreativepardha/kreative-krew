@@ -119,11 +119,22 @@ export type Note = { at: number; sid: string; name: string; text: string }
 
 export type BriefStatus = 'compiling' | 'pending' | 'sent' | 'rejected' | 'failed'
 
+export type Effort = 'low' | 'medium' | 'high' | 'xhigh' | 'max'
+
 export type Brief = {
   id: string
+  /** the human's raw words, kept as given */
   ask: string
   status: BriefStatus
   title: string
+  /** the ask with its grammar fixed and stated clearly, same intent; the worker reads this, not `ask` */
+  task?: string
+  /** 3-8 expert roles, each with its article ("a lead product designer") */
+  roles?: string[]
+  /** plan: the deliverable is an HTML artifact with the complete plan, not code */
+  kind?: 'build' | 'plan'
+  /** `claude --effort` for a hired worker; absent keeps the CLI default */
+  effort?: Effort
   goal: string
   context: string
   criteria: string[]

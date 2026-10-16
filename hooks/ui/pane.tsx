@@ -5,6 +5,7 @@ import type { EngineInterface, Elements, RenderElement } from 'claude-code'
 
 import type { Board, Card, Need, Tab, UiView } from '../../types'
 import { emptyBoard, initialView } from '../core/atoms'
+import { renderBrief } from '../core/brief'
 import { ago, bar, short, sparkline, usd } from '../core/util'
 import {
   approveBrief,
@@ -108,7 +109,7 @@ function briefRow(E: Els, $: $T, board: Board, need: Need, view: UiView, top: bo
       {b.status === 'compiling' ? (
         <Text dimColor>compiling with the smart model…</Text>
       ) : view.detail && Markdown ? (
-        <Markdown text={`**Goal** ${b.goal}\n\n${b.criteria.map(c => `- [ ] ${c}`).join('\n')}\n\n**Owns** ${b.area.join(', ') || '—'} · **Never** ${b.doNotTouch.join(', ') || '—'}\n\n**Verify** ${b.verify.join('; ')}${b.deadEnds.length ? `\n\n**Dead ends** ${b.deadEnds.join('; ')}` : ''}`} />
+        <Markdown text={renderBrief(b)} />
       ) : (
         <Box flexDirection="column">
           <Text wrap="truncate-end">Goal: {short(b.goal, width * 2)}</Text>
